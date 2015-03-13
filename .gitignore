@@ -1,0 +1,6 @@
+*.pptx
+/HW1/data 1/*
+/HW1/dictionary
+*.zip
+*.pyc
+.DS_Store
