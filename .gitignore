@@ -4,3 +4,5 @@
 *.zip
 *.pyc
 .DS_Store
+*.html
+

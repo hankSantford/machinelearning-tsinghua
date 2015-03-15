@@ -1,73 +1,57 @@
-# Input: feature files s1 to s5
-# Steps:
-# Set i=1, take s_i as test set and others as training set.
+from __future__ import division
+from random import shuffle
 
-# On the training set, learn the parameters theta of the logistic regression function and save the learnt parameters (see more details in the following 2 pages).
-
-# On the test set, using the parameters theta learnt from Step 2 to classify each document as hockey or baseball (see more details in the following 2 pages).
-
-# Calculate Precision, Recall and F1 score.
-
-# i++ , Repeat Step 1, 2, 3, and 4 util i > 5.
-
-import os
 import numpy as np
 
-feature_files_path = os.getcwd() + "/features/"
-feature_files = ["feature_s1", "feature_s2", "feature_s3", "feature_s4", "feature_s5"]
-#training_set = ["feature_example_s1"]
+class Perception():
+    def __init__(self, learning_rate, num_features):
+        self.learning_rate = learning_rate
+        self.tp = 0
+        self.fp = 0
+        self.tn = 0
+        self.fn = 0
+        self.w = np.zeros((num_features, 1))
 
-test_set = feature_files[0]
-training_set = feature_files[1:5]
+    def train(self, training_set):
+        for i in xrange(0,100):
+            shuffle(training_set)
+            for sample in training_set:
+                self.train_sample(sample[0], sample[1])
 
-# w_size = 32768
-w_size = 30042
+    def train_sample(self, classification, features):
+        if classification * np.dot(np.transpose(self.w), features) <= 0:
+            self.w += self.learning_rate * classification * features
 
-alpha = 0.5
+    def test(self, test_set):
+        shuffle(test_set)
+        for sample in test_set:
+            self.test_sample(sample[0], sample[1])
 
-def get_feature_vector(feature_vector):
-    # print "getting feature vector"
-    v = np.zeros((w_size,1))
-    for f in feature_vector:
-        (feature, value) = f.split(":")
-        # print int(feature), value
-        v[int(feature),0] = value
-    # print sum(v)
-    return v
-
-def h(x, theta):
-    # print sum(theta), sum(x), np.dot(np.transpose(theta),x)
-    dot = np.dot(np.transpose(theta),x)[0,0]
-    # print dot
-    h = 1.0 / (1.0 + np.exp(- dot ))
-    # print h
-    return h
-
-w = np.zeros((w_size,1))
-
-for s in training_set[:1]:
-    i = 0
-    f = open(feature_files_path + s, "r")
-    for line in f:
-        features = line.strip().split(" ")
-        if features[0] == "baseball":
-            label = 1.0
+    def test_sample(self, classification, features):
+        v = np.dot( np.transpose( self.w ), features )
+        if v <= 0:
+            if classification == -1:
+                self.tn += 1
+            else:
+                self.fn += 1
         else:
-            label = -1.0
-        feature_vector = get_feature_vector(features[1:])
-        # print feature_vector
-        i+=1
-        for d in xrange(0,w_size):
-            # print ( label - h(feature_vector, w) ) * feature_vector[d,0]
-            # print d
-            if feature_vector[d,0] != 0:
-                
-                w[d] += alpha * label * feature_vector[d, 0]
-        
-        print i
+            if classification == 1:
+                self.tp += 1
+            else:
+                self.fp += 1
 
-f = open(feature_files_path + test_set, "r")
-for line in f:
-    features = line.strip().split(" ")
-    feature_vector = get_feature_vector(features[1:])
-    print np.dot(np.transpose(w), feature_vector)[0,0] > 0
+    def get_results(self):
+        return (self.precision(), self.recall(), self.f1())
+
+    def precision(self):
+        return self.tp / (self.tp + self.fp)
+
+    def recall(self):
+        return self.tp / (self.tp + self.fn)
+
+    def f1(self):
+        precision = self.precision()
+        recall = self.recall()
+        return 2 * precision * recall / (precision + recall)
+
+
