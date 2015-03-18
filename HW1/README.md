@@ -14,6 +14,13 @@ How to run
 
 Replace `<data set>` and `<stopwords file>` with paths to the data set and a list of stopwords respectively.
 
+How the features are extracted
+------------------------------
+
+The features are extracted for each non-stopword word in a tokenized document. The value of the feature is based on [TD-IDF](http://en.wikipedia.org/wiki/Tf%E2%80%93idf) with the specific form as follows:
+
+	value = log(word frequency + 1) * log(#documents / # documents where word occurs) 
+
 Example
 -------
 	
@@ -22,51 +29,51 @@ Example
 	Generating feature files ..
 	Starting training ..
 	========== EPOCH 1 ==========
-	Training sets: ['feature_s2', 'feature_s3', 'feature_s4', 'feature_s5']
-	Test set: ['feature_s1']
-	Precision: 0.869158878505
-	Recall: 0.934673366834
-	F1 score: 0.900726392252
+	Training sets: ['features_s2', 'features_s3', 'features_s4', 'features_s5']
+	Test set: ['features_s1']
+	Precision: 0.9375
+	Recall: 0.904522613065
+	F1 score: 0.920716112532
 
 	========== EPOCH 2 ==========
-	Training sets: ['feature_s1', 'feature_s3', 'feature_s4', 'feature_s5']
-	Test set: ['feature_s2']
-	Precision: 0.926395939086
-	Recall: 0.917085427136
-	F1 score: 0.921717171717
+	Training sets: ['features_s1', 'features_s3', 'features_s4', 'features_s5']
+	Test set: ['features_s2']
+	Precision: 0.950248756219
+	Recall: 0.959798994975
+	F1 score: 0.955
 
 	========== EPOCH 3 ==========
-	Training sets: ['feature_s1', 'feature_s2', 'feature_s4', 'feature_s5']
-	Test set: ['feature_s3']
-	Precision: 0.948542024014
-	Recall: 0.926298157454
-	F1 score: 0.937288135593
+	Training sets: ['features_s1', 'features_s2', 'features_s4', 'features_s5']
+	Test set: ['features_s3']
+	Precision: 0.973684210526
+	Recall: 0.929648241206
+	F1 score: 0.951156812339
 
 	========== EPOCH 4 ==========
-	Training sets: ['feature_s1', 'feature_s2', 'feature_s3', 'feature_s5']
-	Test set: ['feature_s4']
-	Precision: 0.957746478873
-	Recall: 0.939698492462
-	F1 score: 0.948636651871
+	Training sets: ['features_s1', 'features_s2', 'features_s3', 'features_s5']
+	Test set: ['features_s4']
+	Precision: 0.959595959596
+	Recall: 0.954773869347
+	F1 score: 0.95717884131
 
 	========== EPOCH 5 ==========
-	Training sets: ['feature_s1', 'feature_s2', 'feature_s3', 'feature_s4']
-	Test set: ['feature_s5']
-	Precision: 0.966223132037
-	Recall: 0.949698189135
-	F1 score: 0.957889396246
+	Training sets: ['features_s1', 'features_s2', 'features_s3', 'features_s4']
+	Test set: ['features_s5']
+	Precision: 0.965
+	Recall: 0.974747474747
+	F1 score: 0.969849246231
 
 	========== Average results ==========
-	Precision: 0.933613290503
-	Recall: 0.933490726604
-	F1 score: 0.933251549536
+	Precision: 0.957205785268
+	Recall: 0.944698238668
+	F1 score: 0.950780202482
 
 Average results
 ---------------
 	
 	========== Average results ==========
-	Precision: 0.933613290503
-	Recall: 0.933490726604
-	F1 score: 0.933251549536
+	Precision: 0.957205785268
+	Recall: 0.944698238668
+	F1 score: 0.950780202482
 
 

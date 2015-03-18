@@ -47,6 +47,13 @@ def tokenize_string(string, punctuations):
     return string
 
 def generate_features(data_path, features_save_path, dictionary_save_path, stopwords):
+    """Generates the feature files.
+
+    data_path - path to data sets
+    features_save_path - path to feature files
+    dictionary_save_path - path to where the dictionary should be saved
+    stopwords - list of stopwords
+    """
 
     punctuations = ["subject:", "re:", "=", "_", ":", ";", ".", "!", "?", ",", "(", ")", "<", ">", "-", "*", "\""]
     dictionary = Dictionary(features_save_path, dictionary_save_path)
