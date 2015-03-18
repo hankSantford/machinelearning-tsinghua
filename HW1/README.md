@@ -1,5 +1,5 @@
-HW1
-===
+HW1: Logistic Regression Implementation
+=======================================
 
 __Name:__ 梁俊雄 Richard Luong
 __Student-ID:__ 2014403075
