@@ -94,8 +94,6 @@ def number_of_movements(number):
 
     return dial.total_moves
 
-
-
 def main(filename):
     with open(filename, 'r') as f:
         number_of_numbers = int(f.readline().strip())
