@@ -2,11 +2,8 @@ from sys import argv, exit
 from perception import Perception
 import tfidf_generate_features, fileutils
 
-# data_path = "data 1/"
 features_save_path = "features/"
 dictionary_save_path = ""
-# stopwords_path = "stopwords"
-
 
 def print_results(precision, recall, f1):
     """Prints the results in a satisfying way."""
