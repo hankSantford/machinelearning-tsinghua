@@ -4,6 +4,8 @@ HW2 Dial problem
 __Author:__ 梁俊雄 Richard Luong
 __Student ID:__ 2014403075
 
+_Calculates number of finger movements for a specified telephone number._
+
 How to run
 ----------
 
