@@ -7,17 +7,22 @@ __Student ID:__ 2014403075
 How to run
 ----------
 
-Unzip `dial_problem.zip` and then run following in a terminal:
+Run following in a terminal:
 
-	python dial.py <input file>
+	python dial.py <input file> > <output file>
 
-Replace `<input file>` with a path to the input file
+Replace `<input file>` with a path to the input file and `<output file>` with a path to where the output file should be saved.
 
 Input file format
 -----------------
 
 * The first line is a positive integer m, the number of test cases.
 * In the following m lines, each line is a string of digits(0-9) to dial. Each line contains less than 10000 characters.
+
+Example
+-------
+
+	$ python dial run input.in > output.out
 
 Input file example
 ------------------
