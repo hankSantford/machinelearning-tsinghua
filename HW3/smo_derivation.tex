@@ -1,0 +1,159 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath} % math
+
+\author{Richard Luong, 2014403075}
+\title{HW3: SMO Derivation\\ 
+\large \emph{Course: }Machine learning}
+
+\begin{document}
+
+\maketitle
+
+\section{We use SMO in SVM training and give an updating formula for parameters ($\alpha_2$) in the end of SVM-I slide. Show in detail how can we derive the formula from the dual problem of SVM.}
+
+Objective function:
+
+\begin{equation}
+\label{loss}
+L(\alpha) = \sum \limits_{i=1}^{m} \alpha_i - \frac{1}{2} \sum \limits_{i,j=0}^{N} y_i y_j \alpha_i \alpha_j \mathbf{x}_i ^T \mathbf{x}_j
+\end{equation}
+
+with constrains:
+
+\begin{equation}
+\label{c1}
+0 \le \alpha_i \le C
+\end{equation}
+
+\begin{equation}
+\label{c2}
+\sum \limits_{i = 1} ^{m} \alpha_i y_i = 0
+\end{equation}
+
+We let all alphas be fixed, except $\alpha_1, \alpha_2$. From the constrains, \eqref{c1} and \eqref{c2}, we get:
+
+\begin{gather}
+\label{c1_new}
+\alpha_1 - \alpha_2 = Const. \\
+\label{c2_new}
+\alpha_1 + \alpha_2 = Const.
+\end{gather}
+
+Let $s = y_1 y_2$ and mulitply $y_1\alpha_1 + y_2 \alpha_2 = Const.$ with $y_1$, denote the constant as $\gamma$ and you will get:
+
+\begin{align}
+\label{a3}
+y_1 (y_1\alpha_1 + y_2 \alpha_2) &= \underbrace{y_1y_1}_{=1}\alpha_1 + \underbrace{y_1y_2}_{=s} \alpha_2 \\
+\label{a3_1}
+&= \alpha_1 + s\alpha_2 = \gamma \Leftrightarrow \alpha_1 = \gamma - s\alpha_2
+\end{align}
+
+Let $K_{ij} = \mathbf{x}_i ^T \mathbf{x}_j$ and
+\begin{align}
+\label{a4}
+v_j &= \sum \limits_{i = 3} ^ {N} \alpha_i y_i \mathbf{x}_i ^T \mathbf{x}_j \\
+&= \underbrace{\mathbf{x}_j ^T \mathbf{w}^{old} - b^{old}}_{= u_j^{old}} + b^{old} - \alpha_1^{old}y_1 \mathbf{x}_1 ^T \mathbf{x}_j-\alpha_2 y_2 \mathbf{x}_2 ^T \mathbf{x}_j \\
+&= u_j^{old} + b^{old} - \alpha_1^{old}y_1K_{1j} - \alpha_2^{old}y_2K_{2j}
+\end{align}
+
+Expand the sum in \eqref{loss} for $i = 1,2$ and the rest as fixed. 
+\begin{multline}
+\label{a5}
+L(\alpha) = \alpha_1 + \alpha_2 + Const. \\
+- \frac{1}{2}( K_{11}\alpha_1^2 + K_{22} \alpha_2^2 + 2sK_{12}\alpha_1\alpha_2 + 2y_1v_1\alpha_1 + 2y_2v_2\alpha_2) + Const.
+\end{multline}
+
+Insert \eqref{a3_1} in \eqref{a5} and simplify.
+\begin{align}
+L(\alpha) &= \begin{aligned}[t]
+& \gamma - s \alpha_2  + \alpha_2 \\
+& - \frac{1}{2} ( K_{11}(\gamma - s \alpha_2)^2 + K_{22} \alpha_2 ^2 + 2sK_{12}(\gamma - s \alpha_2)\alpha_2 \\
+&  + 2y_1v_1(\gamma - s\alpha_2) + 2y_2v_2\alpha_2 ) + Const.
+\end{aligned} \\
+&= \begin{aligned}[t]
+& (1-s)\alpha_2 + sK_{11}\alpha_2 - \frac{1}{2}K_{11}s^2\alpha_2^2 -\frac{1}{2}K_{22}\alpha_2^2 \\
+& -sK_{12}\gamma\alpha_2 +s^2K_{12}\alpha_2^2 + sy_1v_1\alpha_2 - y_2v_2\alpha_2 + Const.
+\end{aligned} \\
+&= \begin{aligned}[t]
+& \alpha_2^2 (-\frac{1}{2}K_{11} - \frac{1}{2}K_{22} + K_{12})  \\
+& + \alpha_2(1 - s + sK_{11}\gamma -sK_{12}\gamma + y_2v_1 + y_2v_2) + Const.
+\end{aligned}
+\end{align}
+
+Rewrite the coefficient of $\alpha_2$ with \eqref{a3_1} and \eqref{a4}
+\begin{align}
+&1 - s + sK_{11}\gamma -sK_{12}\gamma + y_2v_1 + y_2v_2 \\
+=\text{ }& \begin{aligned}[t]
+& 1 - s + sK_{11}(\alpha_1^{old} + s\alpha_2^{old}) -sK_{12}(\alpha_1^{old} + s\alpha_2^{old}) \\
+& + y_2(u_1^{old} + b^{old} - a_1^{old}y_1K_{11} - a_2^{old}y_2K_{12}) \\
+& - y_2(u_2^{old} + b^{old} - a_1^{old}y_1K_{12} - a_2^{old}y_2K_{22})
+\end{aligned} \\
+=\text{ }& \begin{aligned}[t]
+& 1-s + \alpha_1^{old}(sK_{11} - sK_{12} - sK_{11} + sK_{12}) \\
+& + \alpha_2^{old}(K_{11} - 2K_{12} + K_{22}) + y_2(u_1^{old} - u_2^{old})
+\end{aligned} \\
+\label{coff}
+=\text{ }& y_2^2 - y_1y_2 + \alpha_2^{old}(K_{11} - 2K_{12} + K_{22}) + y_2(u_1^{old} - u_2^{old})
+\end{align}
+
+Let 
+\begin{equation}
+\label{n}
+\eta = 2K_{12} - K_{11} - K_{22}
+\end{equation}
+
+\eqref{n} in \eqref{coff} gives us
+
+\begin{align}
+& y_2^2 - y_1y_2 + \eta\alpha_2^{old} + y_2(u_1^{old} - u_2^{old}) \\
+=\text{ }& y_2(y_2 - y_1 + u_1^{old} - u_2^{old}) - \eta\alpha_2^{old} \\
+=\text{ }& y_2((u_1^{old} - y_1) - ({u_2^{old} - y_2}) - \eta\alpha_2^{old} \\
+\label{n_insert}
+=\text{ }& y_2(E_1^{old} - E_2^{old}) -\eta\alpha_2^{old}
+\end{align}
+
+Insert \eqref{n_insert} in \eqref{loss} results in
+
+\begin{equation}
+\label{new_loss}
+L_D = \frac{1}{2}\eta\alpha_2^2 + (y_2(E_1^{old} - E_2^{old}) - \eta\alpha_2^{old})\alpha_2 + Const.
+\end{equation}
+
+Derive \eqref{new_loss}
+\begin{equation}
+\label{first_d}
+\frac{\partial L_D}{\partial \alpha_2} = \eta\alpha_2 + y_2(E_1^{old} - E_2^{old}) - \eta\alpha_2^{old}
+\end{equation}
+
+\begin{equation}
+\frac{\partial^2 L_D}{\partial \alpha_2^2} = \eta
+\end{equation}
+
+Set \eqref{first_d} equals 0 and get $\alpha_2$
+\begin{align}
+\eta\alpha_2 + y_2(E_1^{old} - E_2^{old}) - \eta\alpha_2^{old} &= 0 \\
+\Leftrightarrow \alpha_2 &= \alpha_2^{old} + \frac{y_2(E_2^{old} - E_1^{old})}{\eta}
+\end{align}
+
+This gives us the updating formula for $\alpha_2$
+
+\begin{equation}
+\label{update}
+\alpha_2^{new} = \alpha_2^{old} + \frac{y_2(E_2^{old} - E_1^{old})}{\eta}
+\end{equation}
+
+If $\eta < 0$, \eqref{update} gives is unconstrained max point $\alpha_2^{new}$. The value is the clipped as follows
+
+$$
+\alpha_2^{new,clipped} = \begin{cases} 
+H &\mbox{if } H < \alpha_2^{new} \\ 
+\alpha_2^{new} & \mbox{if } L \le \alpha_2^{new} \le H \\
+L &\mbox{if } \alpha_2 < L
+\end{cases} 
+$$
+
+If $\eta = 0$, we evaluate \eqref{loss} at its endpoints and set $\alpha_2^{new}$ to be the one with larger objective function value.
+
+\end{document}
+
