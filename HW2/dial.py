@@ -1,102 +1,79 @@
-from sys import argv, exit
+from sys import argv, exit, maxsize
 
-NUMPAD = ["1","2","3","4","5","6","7","8","9",'*',"0",'#']
+NUMPAD = ["1","2","3","4","5","6","7","8","9","*","0","#"];
+STEP_LEFT, STEP_RIGHT, STEP_UP, STEP_DOWN = -1, 1, -3, 3
 
 class Dial():
-    current_position = 0 # current finger position 
-    total_moves = 0 # total number of movements
-    position = {} # table of tables with number of movements and later position while moving from one number to another.
+    current_position = 0
+    total_movements = 0
+    matrix = {}
 
-    def __init__(self):
-        for i in xrange(len(NUMPAD)):
-            if (i % 3 != 2):
-                self.position[i] = self.get_table_for_position(i)
+    def get_number_of_steps(self, start, end):
+        """Returns number of movements from start to end.
+        Gets the number from a table, calculates shortest path greedily otherwise and stores the value.
 
-    def get_table_for_position(self, i):
-        """Returns a table that contains 12 other tables, one for each button in the numpad. 
-        The inner table consists of number of movements and the later finger position when moving from the current.
+        start - start position
+        end - end position
 
-        i - original finger position
+        return - number of movements from start to end
         """
-        table = {}
-        for j in xrange(len(NUMPAD)):
-            table[j] = {}
+        if start < 0 or start >= len(NUMPAD) or end < 0 or end >= len(NUMPAD):
+            return maxsize
 
-            if j == 0:
-                table[j]['position'] = 0
-                table[j]['movements'] = i / 3 + (i % 3)
-            if j == 1:
-                table[j]['movements'] = i / 3
-                table[j]['position'] = i % 3
-            if j == 2:
-                table[j]['position'] = 1
-                table[j]['movements'] = 1 - (i % 3) + i / 3
-            
-            if j == 9:
-                table[j]['position'] = 9
-                table[j]['movements'] = 3 - i / 3 + (i % 3)
-            if j == 10:
-                table[j]['movements'] = 3 - i / 3
-                table[j]['position'] = 9 + i % 3
-            if j == 11:
-                table[j]['position'] = 10
-                table[j]['movements'] = 1 - (i % 3) + 3 - i / 3
+        if start not in self.matrix:
+            self.matrix[start] = {}
+        if end in self.matrix[start]:
+            return self.matrix[start][end]
 
-            ###
+        if start == end:
+            self.matrix[start][end] = 0
+        else:
+            self.matrix[start][end] = maxsize
 
-            if j == 3:
-                table[j]['position'] = 3
-                if i / 3 == 1:
-                    table[j]['movements'] = i % 3
-                else:
-                    table[j]['movements'] = abs(1 - i / 3) + (i % 3)
-            if j == 4:
-                table[j]['movements'] = abs(1 - i / 3)
-                if i / 3 == 1:
-                    table[j]['position'] = i
-                else:
-                    table[j]['position'] = 3 + (i % 3)
-            if j == 5:
-                table[j]['position'] = 4
-                if i / 3 == 1:
-                    table[j]['movements'] = 1 - (i % 3)
-                else:
-                    table[j]['movements'] = abs(1 - i / 3) + 1 - (i % 3)
+            if end > start: 
+                if start % 3 == 0: # check right
+                    self.matrix[start][end] = min(self.matrix[start][end], 1 + self.get_number_of_steps(start + STEP_RIGHT, end))
+                self.matrix[start][end] = min(self.matrix[start][end], 1 + self.get_number_of_steps(start + STEP_DOWN, end)) # check down
+            if end < start: 
+                if start % 3 == 1: # check left
+                    self.matrix[start][end] = min(self.matrix[start][end], 1 + self.get_number_of_steps(start + STEP_LEFT, end))
+                self.matrix[start][end] = min(self.matrix[start][end], 1 + self.get_number_of_steps(start + STEP_UP, end)) # check up
 
-            if j == 6:
-                table[j]['position'] = 6
-                if i / 3 == 2:
-                    table[j]['movements'] = i % 3
-                else:
-                    table[j]['movements'] = abs(2 - i / 3) + (i % 3) 
-            if j == 7:
-                table[j]['movements'] = abs(2 - i / 3)
-                if i / 3 == 2:
-                    table[j]['position'] = i
-                else:
-                    table[j]['position'] = 6 + (i % 3)
-            if j == 8:
-                table[j]['position'] = 7
-                if i / 3 == 2:
-                    table[j]['movements'] = 1 - (i % 3)
-                else:
-                    table[j]['movements'] = abs(2 - i / 3) + 1 - (i % 3)
+        return self.matrix[start][end]
 
-        return table
-
-    def move(self, i):
+    def move(self, number):
         """Moves to the specified position.
         Adds number of made movements to the total and updates current position.
 
-        i - number where we should move
+        number - number where we should move
         """
-        index = get_index_of_number(i)
-        self.total_moves += self.position[self.current_position][index]['movements']
-        self.current_position = self.position[self.current_position][index]['position']
+        index_finger_positions = self.get_index_finger_positions(number)
+        movements = maxsize
+        position = 0
 
-def get_index_of_number(i):
-    """Returns index of the number (i) that should be pressed."""
-    return NUMPAD.index(i)
+        for index_finger_position in index_finger_positions:
+            temp_movements = self.get_number_of_steps(self.current_position, index_finger_position)
+            if temp_movements < movements:
+                movements = temp_movements
+                position = index_finger_position
+
+        self.total_movements += movements
+        self.current_position = position
+
+    def get_index_finger_positions(self, number):
+        """Returns position(s) of index finger by the given number.
+
+        number - index in NUMPAD that should be pressed
+
+        return - index in NUMPAD where the index finger should be located
+        """
+        number_index = NUMPAD.index(number)
+        if number_index % 3 == 0:
+            return [number_index]
+        if number_index % 3 == 1:
+            return [number_index-1, number_index]
+        if number_index % 3 == 2:
+            return [number_index-1]
 
 def number_of_movements(number):
     """Returns number of movements required for dialing the specified number."""
@@ -104,7 +81,7 @@ def number_of_movements(number):
     for i in number:
         dial.move(i)
 
-    return dial.total_moves
+    return dial.total_movements
 
 def main(filename):
     with open(filename, 'r') as f:
